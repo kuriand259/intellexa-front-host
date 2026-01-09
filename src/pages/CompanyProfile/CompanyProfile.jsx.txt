@@ -1,0 +1,198 @@
+import React from "react";
+import {
+  Building2,
+  PlusCircle,
+  Flame,
+  RefreshCw,
+  MoreHorizontal,
+  ChevronRight,
+} from "lucide-react";
+
+import "./CompanyProfile.css";
+import MapChart from "../../components/MapChart/MapChart";
+import StatCard from "../../components/StatCard/StatCard";
+import LineChart from "../../components/LineChart/LineChart";
+
+const CompanyProfile = () => {
+  // 🔹 Real data values (API-ready)
+  const prospectTrendData = [
+    120, 150, 180, 160, 210, 240
+  ];
+
+  return (
+    <div className="home-dashboard">
+
+      {/* ================= Top Stats ================= */}
+      <div className="p-stats-grid">
+        <StatCard
+          icon={<PlusCircle size={18} />}
+          title="New Companies Added"
+          value={
+            <>
+              +28 <span style={{ fontSize: "1rem", color: "#888" }}>Today</span>
+            </>
+          }
+          footer="↑ +159 This Week"
+        />
+
+        <StatCard
+          icon={<Building2 size={18} />}
+          title="Total Companies"
+          value="27,450"
+          footer="↑ Net 162 Today"
+        />
+
+        <StatCard
+          icon={<Flame size={18} />}
+          title="High-Value Prospects"
+          value="1,482"
+          footer="↑ +49 This Week"
+        />
+
+        <StatCard
+          icon={<RefreshCw size={18} />}
+          title="Recently Updated Profiles"
+          value="314"
+          footer="↑ +96 This Week"
+        />
+      </div>
+
+      {/* ================= Middle Section ================= */}
+      <div className="p-mid-section">
+
+        {/* ===== Prospect Trends (Line Chart) ===== */}
+        <div className="p-dashboard-card highlight">
+          <div className="card-header">
+            <span>Prospect Trends</span>
+            <span style={{ fontSize: "0.8rem", color: "#888" }}>
+              Last 30 Days ▼
+            </span>
+          </div>
+
+          {/* IMPORTANT: container defines height */}
+          <div className="chart-container">
+            <LineChart
+              data={prospectTrendData}
+              stroke="var(--accent-yellow)"
+              showDots
+            />
+          </div>
+
+          <div className="chart-legend">
+            <div>
+              <div style={{ color: "#ddd", fontSize: "1.2rem" }}>
+                Hot 1,482
+              </div>
+              <div className="trend-up" style={{ fontSize: "0.8rem" }}>
+                ↑ +38
+              </div>
+            </div>
+            <div>
+              <div style={{ color: "#ddd", fontSize: "1.2rem" }}>
+                Warm 2,290
+              </div>
+              <div className="trend-up" style={{ fontSize: "0.8rem" }}>
+                ↑ +48 This Week
+              </div>
+            </div>
+            <div>
+              <div style={{ color: "#ddd", fontSize: "1.2rem" }}>
+                Cold 8,156
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===== AI Recommendations ===== */}
+        <div className="p-dashboard-card" style={{ padding: "1rem" }}>
+          <div className="card-header" style={{ marginBottom: "1rem" }}>
+            <span style={{ color: "#cbb26a" }}>AI Recommendations</span>
+            <MoreHorizontal size={16} />
+          </div>
+
+          <div className="ai-card">
+            <div style={{ fontWeight: 600, marginBottom: 4 }}>
+              Top 5 Companies to Target
+            </div>
+            <ul
+              style={{
+                fontSize: "0.8rem",
+                paddingLeft: 20,
+                color: "#aaa",
+              }}
+            >
+              <li>ABML – $20M+ funding</li>
+              <li>Developing AI & 5G solutions</li>
+              <li>High-value prospect</li>
+            </ul>
+          </div>
+
+          <div className="ai-card gold-type">
+            <div
+              style={{
+                fontWeight: 600,
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <span>New Companies</span>
+              <ChevronRight size={16} />
+            </div>
+            <div style={{ fontSize: "0.8rem", color: "#aaa" }}>
+              Similar to TechCorp
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ================= Bottom Section ================= */}
+      <div className="p-bottom-section">
+        <div className="p-dashboard-card">
+          {/* <div className="card-header">
+            <span>Top Geographies (Map)</span>
+          </div> */}
+          <div className="map-placeholder">
+            <MapChart />
+          </div>
+        </div>
+
+        {/* ===== Top Geographies ===== */}
+        <div className="p-dashboard-card">
+          <div className="card-header">
+            <span>Top Geographies</span>
+          </div>
+
+          <div className="geo-list">
+            <div className="geo-item">
+              <span>🇺🇸 USA</span>
+              <span>13,252</span>
+            </div>
+            <div className="geo-item">
+              <span>🇮🇳 India</span>
+              <span>8,316</span>
+            </div>
+            <div className="geo-item">
+              <span>🇸🇬 Singapore</span>
+              <span>2,112</span>
+            </div>
+          </div>
+
+          <div
+            style={{
+              textAlign: "right",
+              marginTop: "1rem",
+              color: "#888",
+              fontSize: "0.8rem",
+              cursor: "pointer",
+            }}
+          >
+            View All &gt;
+          </div>
+        </div>
+      </div>
+
+    </div>
+  );
+};
+
+export default CompanyProfile;

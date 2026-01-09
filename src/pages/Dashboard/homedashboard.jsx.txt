@@ -1,0 +1,640 @@
+import React from 'react';
+import { Building2, PlusCircle, Flame, RefreshCw, MoreHorizontal, ChevronRight, Globe, TrendingUp } from 'lucide-react';
+import MapChart from '../../components/MapChart/MapChart';
+import StatCard from "../../components/StatCard/StatCard";
+import './HomeDashboard.css';
+
+const accentYellow = '#FAD400';
+// cbb26a this is golden yell
+const HomeDashboard = () => {
+    return (
+        <div className="home-dashboard">
+
+            {/* Top Stats Row */}
+            <div className="stats-grid">
+                <StatCard
+                    icon={<PlusCircle size={18} />}
+                    title="New Companies Added"
+                    value={
+                    <>
+                        +28 <span style={{ fontSize: "1rem", color: "#888" }}>Today</span>
+                    </>
+                    }
+                    footer="↑ +159 This Week"
+                />
+
+                <StatCard
+                    icon={<Building2 size={18} />}
+                    title="Total Companies"
+                    value="27,450"
+                    footer="↑ Net 162 Today"
+                    // highlight
+                />
+
+                <StatCard
+                    icon={<Flame size={18} />}
+                    title="High-Value Prospects"
+                    value="1,482"
+                    footer="↑ +49 This Week"
+                />
+
+                <StatCard
+                    icon={<RefreshCw size={18}/>}
+                    title="Recently Updated Profiles"
+                    value="314"
+                    footer="↑ +96 This Week"
+                />
+            </div>
+
+            {/* Middle Section */}
+            <div className="mid-section">
+                {/* Chart */}
+                <div className="dashboard-card highlight">
+                    <div className="card-header">
+                        <span>Prospect Trends</span>
+                        <span style={{ fontSize: '0.8rem', color: '#888' }}>Last 30 Days ▼</span>
+                    </div>
+                    <div className="chart-container">
+                        {/* Mock Bars */}
+                        {[20, 30, 45, 40, 55, 60, 50, 65, 70, 85, 90, 80].map((h, i) => (
+                            <div key={i} className="bar" style={{ height: `${h}%` }}></div>
+                        ))}
+                    </div>
+                    <div className="chart-legend">
+                        <div>
+                            <div style={{ color: '#ddd', fontSize: '1.2rem' }}>Hot 1,482</div>
+                            <div className="trend-up" style={{ fontSize: '0.8rem' }}>↑ +38</div>
+                        </div>
+                        <div>
+                            <div style={{ color: '#ddd', fontSize: '1.2rem' }}>Warm 2,290</div>
+                            <div className="trend-up" style={{ fontSize: '0.8rem' }}>↑ +48 This Week</div>
+                        </div>
+                        <div>
+                            <div style={{ color: '#ddd', fontSize: '1.2rem' }}>Cold 8,156</div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Top Geographies */}
+                <div className="dashboard-card highlight">
+                    <div className="card-header">
+                        <span>Top Geographies</span>
+                    </div>
+                    <div className="geo-list">
+                        <div className="geo-item">
+                            <span style={{ display: 'flex', gap: '8px' }}>🇺🇸 USA</span>
+                            <span>13,252</span>
+                        </div>
+                        <div className="geo-item">
+                            <span style={{ display: 'flex', gap: '8px' }}>🇮🇳 India</span>
+                            <span>8,316</span>
+                        </div>
+                        <div className="geo-item">
+                            <span style={{ display: 'flex', gap: '8px' }}>🇸🇬 Singapore</span>
+                            <span>2,112</span>
+                        </div>
+                    </div>
+                    <div style={{ textAlign: 'right', marginTop: '1rem', color: '#888', fontSize: '0.8rem', cursor: 'pointer' }}>View All &gt;</div>
+                </div>
+
+                {/* AI Recommendations */}
+                <div className="dashboard-card" style={{ padding: '1rem' }}>
+                    <div className="card-header" style={{ marginBottom: '1rem' }}>
+                        <span style={{ color: '#cbb26a' }}>AI Recommendations</span>
+                        <MoreHorizontal size={16} />
+                    </div>
+
+                    <div className="ai-card">
+                        <div style={{ fontWeight: '600', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#3b82f6', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>T</div>
+                            Top 5 Companies to Target
+                        </div>
+                        <ul style={{ fontSize: '0.8rem', paddingLeft: '20px', color: '#aaa', lineHeight: '1.4' }}>
+                            <li>ABML - $20M+ funding.</li>
+                            <li>Developing AI & 5G solutions</li>
+                            <li>High-value prospect</li>
+                        </ul>
+                    </div>
+
+                    <div className="ai-card gold-type">
+                        <div style={{ fontWeight: '600', marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#ffd700', color: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>N</div>
+                                New Companies
+                            </span>
+                            <ChevronRight size={16} />
+                        </div>
+                        <div style={{ fontSize: '0.8rem', color: '#aaa' }}>Similar to TechCorp</div>
+                        <div style={{ fontSize: '0.8rem', color: '#fff', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <div style={{ width: 12, height: 12, borderRadius: '2px', background: '#3b82f6' }}></div> TechCorp Solutions
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Bottom Section */}
+            <div className="bottom-section highlight">
+                <div className="dashboard-card">
+                    <div className="card-header">
+                        <span>Top Geographies (Map)</span>
+                    </div>
+                    <div className="map-placeholder">
+                        <MapChart />
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem', fontSize: '0.9rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>🇺🇸 USA</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>🇮🇳 India</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>🇸🇬 Singapore</div>
+                    </div>
+                </div>
+
+                <div className="dashboard-card">
+                    <div className="card-header">
+                        <span>Top Geographies</span>
+                        <span style={{ fontSize: '0.8rem', color: '#888' }}>View All &gt;</span>
+                    </div>
+                    <div className="geo-list">
+                        <div className="geo-item">
+                            <span style={{ display: 'flex', gap: '8px' }}>🇺🇸 USA</span>
+                            <span>13,252</span>
+                        </div>
+                        <div className="geo-item">
+                            <span style={{ display: 'flex', gap: '8px' }}>🇮🇳 India</span>
+                            <span>8,316</span>
+                        </div>
+                        <div className="geo-item">
+                            <span style={{ display: 'flex', gap: '8px' }}>🇸🇬 Singapore</span>
+                            <span>2,112</span>
+                        </div>
+                    </div>
+                    <div style={{ textAlign: 'right', marginTop: '1rem', color: '#888', fontSize: '0.8rem', cursor: 'pointer' }}>View All &gt;</div>
+                </div>
+
+                <div className="dashboard-card highlight">
+                    <div className="card-header">
+                        <span>Watchlist Activity</span>
+                        <span style={{ fontSize: '0.8rem', color: '#888' }}>View All &gt;</span>
+                    </div>
+                    <div className="activity-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div>
+                            <div style={{ fontWeight: '600', display: 'flex', gap: '8px' }}>
+                                <div style={{ width: 24, height: 24, background: '#223', borderRadius: '4px' }}></div> SoftEngine Inc.
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: '#888', marginLeft: '32px' }}>Software Development, Austin, USA</div>
+                            <div style={{ fontSize: '0.75rem', color: '#4caf50', marginLeft: '32px' }}>↑ 120 Employees</div>
+                        </div>
+                        <div>
+                            <div style={{ fontWeight: '600', display: 'flex', gap: '8px' }}>
+                                <div style={{ width: 24, height: 24, background: '#322', borderRadius: '4px' }}></div> XRM Software
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: '#888', marginLeft: '32px' }}>Sade, Toronto, Canada</div>
+                            <div style={{ fontSize: '0.75rem', color: '#4caf50', marginLeft: '32px' }}>↑ 90 Employees</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    );
+};
+
+export default HomeDashboard;
+
+
+
+
+
+
+
+
+
+
+import React, { useEffect, useState } from 'react';
+import { Building2, PlusCircle, Flame, RefreshCw, MoreHorizontal, ChevronRight } from 'lucide-react';
+
+import EventSlider from "../../components/EventSlider/EventSlider";
+
+import MapChart from '../../components/MapChart/MapChart';
+import StatCard from "../../components/StatCard/StatCard";
+
+import {
+    getCompanyCount,
+    getNewCompaniesToday,
+    getRecentlyUpdated,
+    getCompaniesForGeo,
+    getRecentEvents,
+    getTopRecommendations,
+    getHighValueProspects,
+    getRecentCompanies
+} from "../../api/dashboard";
+import './HomeDashboard.css';
+
+import {
+    PieChart,
+    Pie,
+    Cell,
+    Tooltip as RechartsTooltip,
+    Legend,
+    ResponsiveContainer
+} from "recharts";
+
+
+
+// main yellow accent is already in CSS, keeping ui same
+const CACHE_KEY_EVENTS = 'dashboard_recent_events';
+
+const HomeDashboard = () => {
+
+    // Removed blocking loading state to allow progressive rendering
+    // const [loading, setLoading] = useState(true);
+
+    // Dashboard state
+    const [totalCompanies, setTotalCompanies] = useState(0);
+    const [newToday, setNewToday] = useState(0);
+    const [recentUpdated, setRecentUpdated] = useState(0);
+    const [geoTop, setGeoTop] = useState([]);
+    const [events, setEvents] = useState([]);
+    const [recommendations, setRecommendations] = useState([]);
+    const [highValueCount, setHighValueCount] = useState(0);
+    const [trendBars, setTrendBars] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [scoreData, setScoreData] = useState([]);
+
+
+    useEffect(() => {
+
+        setScoreData([
+            { name: "High Score", value: 1482 },
+            { name: "Medium Score", value: 2290 },
+            { name: "Fair Score", value: 815 },
+            { name: "Low Score", value: 312 }
+        ]);
+        // 1. Independent light calls: Fire and forget (update state when done)
+        getCompanyCount()
+            .then(res => setTotalCompanies(res.data?.count ?? 0))
+            .catch(err => console.error("Count API failed", err));
+
+        getNewCompaniesToday()
+            .then(res => setNewToday(res.data?.length ?? 0))
+            .catch(err => console.error("NewToday API failed", err));
+
+        // 0. Try loading from cache first
+        const cachedEvents = localStorage.getItem(CACHE_KEY_EVENTS);
+        if (cachedEvents) {
+            try {
+                setEvents(JSON.parse(cachedEvents));
+            } catch (e) {
+                console.error("Failed to parse cached events", e);
+            }
+        }
+
+        getRecentEvents()
+            .then(res => {
+                const data = res.data || [];
+                setEvents(data);
+                // Update cache
+                localStorage.setItem(CACHE_KEY_EVENTS, JSON.stringify(data));
+            })
+            .catch(err => {
+                console.error("Events API failed", err);
+                // If API fails, we already have cached data in state if available.
+            });
+
+        getTopRecommendations()
+            .then(res => setRecommendations(res.data || []))
+            .catch(err => console.error("Recos API failed", err));
+
+        getHighValueProspects()
+            .then(res => setHighValueCount(res?.data?.length ?? 0))
+            .catch(err => console.error("HighVal API failed", err));
+
+        getRecentCompanies()
+            .then(res => {
+                // Build Last 30 Days Trend
+                const companies = res?.data || [];
+                const map = {};
+                companies.forEach(c => {
+                    const d = new Date(c.created_at).toISOString().slice(0, 10);
+                    map[d] = (map[d] || 0) + 1;
+                });
+
+                const last30 = [];
+                for (let i = 29; i >= 0; i--) {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    const key = d.toISOString().slice(0, 10);
+                    last30.push(map[key] || 0);
+                }
+                setTrendBars(last30);
+            })
+            .catch(err => console.error("RecentCompanies API failed", err));
+
+
+        // 2. Heavy Data call (Consolidated)
+        // getRecentlyUpdated() & getCompaniesForGeo() both fetched /api/v1/companies
+        // We call it once here.
+        getRecentlyUpdated()
+            .then(res => {
+                const companies = res.data || [];
+
+                // A. Recently Updated Count
+                setRecentUpdated(companies.length);
+
+                // B. Top Geography Calculation
+                const countryMap = {};
+                companies.forEach(c => {
+                    const country = c?.geography?.hq?.country || "Unknown";
+                    countryMap[country] = (countryMap[country] || 0) + 1;
+                });
+
+                const sorted = Object.entries(countryMap)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 3)
+                    .map(([country, count]) => ({ country, count }));
+
+                setGeoTop(sorted);
+            })
+            .catch(err => console.error("Heavy Companies API failed", err));
+
+    }, []);
+
+    // Removed blocking loading check
+    // if (loading) return <div style={{ padding: 20 }}>Loading Dashboard…</div>;
+
+
+    return (
+        <div className="home-dashboard">
+
+            {/* ================= TOP STATS ================= */}
+            <div className="stats-grid">
+
+                <StatCard
+                    icon={<PlusCircle size={18} />}
+                    title="New Companies Added"
+                    value={
+                        <>
+                            +{newToday} <span style={{ fontSize: "1rem", color: "#888" }}>Today</span>
+                        </>
+                    }
+                    footer=""
+                />
+
+                <StatCard
+                    icon={<Building2 size={18} />}
+                    title="Total Companies"
+                    value={totalCompanies}
+                    footer=""
+                />
+
+                <StatCard
+                    icon={<Flame size={18} />}
+                    title="High-Value Prospects"
+                    value={highValueCount}
+                    footer="AI Fit: GREEN Prospects"
+                />
+
+                <StatCard
+                    icon={<RefreshCw size={18} />}
+                    title="Recently Updated Profiles"
+                    value={recentUpdated}
+                    footer=""
+                />
+            </div>
+
+
+
+            {/* ================= MIDDLE SECTION ================= */}
+            <div className="mid-section">
+
+                {/* ---- Watchlist Activity (Expanded) ----
+                <div className="events-card">
+                    <h3>News & Events</h3>
+                    <EventSlider events={events} />
+                </div>
+
+
+
+
+                {/* ---- AI Recommendations UI ---- */}
+                {/* <div className="dashboard-card" style={{ padding: '1rem' }}>
+                    <div className="card-header" style={{ marginBottom: '1rem' }}>
+                        <span style={{ color: '#cbb26a' }}>AI Recommendations</span>
+                        <MoreHorizontal size={16} />
+                    </div> */}
+
+                {/* --- Top Recommended Companies --- */}
+                {/* <div className="ai-card">
+                        <div style={{
+                            fontWeight: '600',
+                            marginBottom: '4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px'
+                        }}>
+                            <div style={{
+                                width: 20,
+                                height: 20,
+                                borderRadius: '50%',
+                                background: '#3b82f6',
+                                color: 'white',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '10px'
+                            }}>
+                                T
+                            </div>
+                            Top 5 Companies to Target
+                        </div>
+
+                        {recommendations.length === 0 && (
+                            <div className="ai-skeleton">
+                                <div></div><div></div><div></div>
+                            </div>
+                        )}
+
+
+                        <ul style={{
+                            fontSize: '0.8rem',
+                            paddingLeft: '20px',
+                            color: '#aaa',
+                            lineHeight: '1.4'
+                        }}>
+                            {recommendations.map((r, i) => (
+                                <li key={r._id || i}>
+                                    {r?.company_id || "Company"}
+                                    {' '}— <b>{r?.client_score?.value}</b> ({r?.client_score?.label})
+                                </li>
+                            ))}
+                        </ul>
+                    </div> */}
+
+                {/* --- Gold Section --- */}
+                {/* <div className="ai-card gold-type">
+                        <div style={{
+                            fontWeight: '600',
+                            marginBottom: '4px',
+                            display: 'flex',
+                            justifyContent: 'space-between'
+                        }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <div style={{
+                                    width: 20,
+                                    height: 20,
+                                    borderRadius: '50%',
+                                    background: '#ffd700',
+                                    color: 'black',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '10px'
+                                }}>
+                                    N
+                                </div>
+                                New Companies
+                            </span>
+                            <ChevronRight size={16} />
+                        </div>
+
+                        <div style={{ fontSize: '0.8rem', color: '#aaa' }}>
+                            Based on best-fit AI analysis
+                        </div>
+                    </div>
+                </div>  */}
+                {/* Score Distribution (Donut Chart) */}
+                <div className="dashboard-card" style={{ minHeight: '300px' }}>
+                    <div className="card-header">
+                        <span>Score Health</span>
+                        <span style={{ fontSize: '0.8rem', color: '#888' }}>
+                            Client Quality Distribution
+                        </span>
+                    </div>
+
+                    {loading ? (
+                        <div className="loading-spinner"></div>
+                    ) : (
+                        <div style={{ width: '100%', height: '220px' }}>
+                            {scoreData.length > 0 ? (
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={scoreData}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={65}
+                                            outerRadius={85}
+                                            paddingAngle={4}
+                                            dataKey="value"
+                                            stroke="none"
+                                        >
+                                            {scoreData.map((entry, index) => {
+                                                let color = "#888";
+                                                if (entry.name.includes("High")) color = "#10b981";   // Green
+                                                else if (entry.name.includes("Medium")) color = "#3b82f6"; // Blue
+                                                else if (entry.name.includes("Fair")) color = "#f59e0b";   // Amber
+                                                else if (entry.name.includes("Low")) color = "#ef4444";    // Red
+
+                                                return <Cell key={`cell-${index}`} fill={color} />;
+                                            })}
+                                        </Pie>
+
+                                        <RechartsTooltip
+                                            contentStyle={{
+                                                backgroundColor: "#18181b",
+                                                border: "1px solid #333",
+                                                borderRadius: "8px"
+                                            }}
+                                            itemStyle={{ color: "white" }}
+                                        />
+
+                                        <Legend
+                                            verticalAlign="bottom"
+                                            height={36}
+                                            iconType="circle"
+                                            wrapperStyle={{ fontSize: "12px" }}
+                                        />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            ) : (
+                                <div
+                                    style={{
+                                        height: "100%",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        color: "#666"
+                                    }}
+                                >
+                                    No scores available
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+
+
+            </div>
+
+
+            {/* ================= BOTTOM SECTION ================= */}
+            <div className="bottom-section highlight">
+
+                {/* ---- Map Section ---- */}
+                <div className="dashboard-card">
+                    <div className="card-header">
+                        <span>Top Geographies (Map)</span>
+                    </div>
+
+                    <div className="map-placeholder">
+                        <MapChart
+                            hqCountry="United States"
+                            highlightedCountries={[
+                                "India",
+                                "Singapore",
+                                "Germany",
+                                "United Kingdom",
+                            ]}
+                        />
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1rem', fontSize: '0.9rem' }}>
+                        {geoTop.slice(0, 3).map((g, i) => (
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                {g.country}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+
+                {/* ---- Dynamic Top Geographies ---- */}
+                <div className="dashboard-card highlight">
+                    <div className="card-header">
+                        <span>Top Geographies</span>
+                    </div>
+
+                    <div className="geo-list">
+                        {geoTop.map((g, i) => (
+                            <div className="geo-item" key={i}>
+                                <span style={{ display: 'flex', gap: '8px' }}>
+                                    {g.country}
+                                </span>
+                                <span>{g.count}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div style={{ textAlign: 'right', marginTop: '1rem', color: '#888', fontSize: '0.8rem', cursor: 'pointer' }}>
+                        View All &gt;
+                    </div>
+                </div>
+
+
+
+            </div>
+
+        </div>
+    );
+};
+
+export default HomeDashboard;

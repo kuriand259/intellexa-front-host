@@ -1,0 +1,71 @@
+.menu-item {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  border: none;
+  cursor: pointer;
+
+  position: relative;
+  /* overflow: hidden; */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+}
+
+/* Cursor-follow glow */
+.menu-item-glow {
+  position: absolute;
+  inset: 0px;
+  background: radial-gradient(60px circle at var(--x) var(--y),
+      rgba(250, 204, 21, 0.35),
+      transparent 60%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  filter: blur(12px);
+}
+
+.menu-item:hover .menu-item-glow {
+  opacity: 1;
+}
+
+/* Icons */
+.menu-item-icon {
+  width: 24px;
+  height: 24px;
+  z-index: 1;
+}
+
+/* Unmasked icons (images) should follow the theme: White by default, Black when active */
+img.menu-item-icon {
+  filter: brightness(0) invert(1);
+  transition: filter 0.2s;
+}
+
+.menu-item-active img.menu-item-icon {
+  filter: none;
+  /* If the original image isn't black, force it to black: */
+  /* filter: brightness(0); */
+}
+
+.menu-item-icon-mask {
+  background-color: var(--accent-white);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+.menu-item-active {
+  background-color: var(--accent-yellow);
+}
+
+.menu-item-active .menu-item-icon-mask {
+  background-color: var(--bg-black);
+}

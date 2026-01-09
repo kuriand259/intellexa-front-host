@@ -1,0 +1,148 @@
+import React, { useState } from "react";
+import { ComposableMap, Geographies, Geography, Marker ,ZoomableGroup} from "react-simple-maps";
+// import { Tooltip } from 'react-tooltip'
+// import 'react-tooltip/dist/react-tooltip.css'
+
+// const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+const geoUrl = "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson";
+
+const markers = [
+    { markerOffset: -15, name: "USA", coordinates: [-96, 37], confirmed: 13252, fill: "#ffd700" },
+    { markerOffset: -15, name: "India", coordinates: [78, 20], confirmed: 8316, fill: "#4caf50" },
+    { markerOffset: 25, name: "Singapore", coordinates: [103.8, 1.35], confirmed: 2112, fill: "#3b82f6" },
+];
+
+const countryData = {
+  USA: { confirmed: 13252, fill: "#ffd700" },
+  IND: { confirmed: 8316, fill: "#4caf50" },
+  LKA: { confirmed: 2112, fill: "#3b82f6" },
+};
+
+
+// const MapChart = () => {
+
+//     return (
+//         <div style={{ width: "100%", height: "100%", position: "relative" }}>
+//             <ComposableMap
+//                 projection="geoMercator"
+//                 projectionConfig={{
+//                     scale: 100,
+//                     center: [0, 20]
+//                 }}
+//                 style={{ width: "100%", height: "100%" }}
+//             >
+//                 <Geographies geography={geoUrl}>
+//                     {({ geographies }) =>
+//                         geographies.map((geo) => {
+//                         const iso = geo.id;
+//                         const data = countryData[iso];
+//                         console.log(geo.id);
+
+
+//                         return (
+//                             <Geography
+//                             key={geo.rsmKey}
+//                             geography={geo}
+//                             fill={data ? data.fill : "#333"}
+//                             stroke="#000"
+//                             strokeWidth={0.5}
+//                             style={{
+//                                 default: { outline: "none" },
+//                                 hover: {
+//                                 fill: data ? data.fill : "#555",
+//                                 outline: "none",
+//                                 transition: "all 250ms",
+//                                 },
+//                                 pressed: { outline: "none" },
+//                             }}
+//                             />
+//                         );
+//                         })
+//                     }
+//                 </Geographies>
+
+
+//                 {/* {markers.map(({ name, coordinates, markerOffset, confirmed, fill }) => (
+//                     <Marker key={name} coordinates={coordinates}>
+//                         <circle
+//                             r={4}
+//                             fill={fill}
+//                             stroke="#fff"
+//                             strokeWidth={1}
+//                             style={{ cursor: "pointer", filter: "drop-shadow(0 0 4px " + fill + ")" }}
+//                         /> */}
+//                         {/* Text Label is optional, can clutter small maps
+//                     <text
+//                         textAnchor="middle"
+//                         y={markerOffset}
+//                         style={{ fontFamily: "system-ui", fill: "#fff", fontSize: "10px" }}
+//                     >
+//                         {name}
+//                     </text> 
+//                     */}
+//                     {/* </Marker>
+//                 ))} */}
+//             </ComposableMap>
+//             {/* <Tooltip id="map-tooltip" style={{ backgroundColor: "#333", color: "#fff", fontSize: '0.8rem', borderRadius: '4px' }} /> */}
+//         </div>
+//     );
+// };
+
+const MapChart = () => {
+  return (
+    <div style={{ width: "100%", height: "100%", position: "relative" }}>
+      <ComposableMap
+        projection="geoMercator"
+        style={{ width: "100%", height: "100%" }}
+        projectionConfig={{
+          scale: 100,
+          center: [0, 20],
+        }}
+      >
+        <ZoomableGroup
+          zoom={1}
+          minZoom={1}
+          maxZoom={6}
+          translateExtent={[
+            [-1000, -500],
+            [1000, 500],
+          ]}
+        >
+          <Geographies geography={geoUrl}>
+            {({ geographies }) =>
+              geographies.map((geo) => {
+                const iso = geo.id;
+                const data = countryData[iso];
+
+                return (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    fill={data ? data.fill : "#333"}
+                    stroke="#000"
+                    strokeWidth={0.01}
+                    style={{
+                      default: { outline: "none" },
+                      hover: {
+                        fill: data ? data.fill : "#555",
+                        outline: "none",
+                        transition: "all 250ms",
+                      },
+                      pressed: { outline: "none" },
+                    }}
+                  />
+                );
+              })
+            }
+          </Geographies>
+        </ZoomableGroup>
+      </ComposableMap>
+    </div>
+  );
+};
+
+
+export default MapChart;
+
+
+//this is before editing the map color and stuff

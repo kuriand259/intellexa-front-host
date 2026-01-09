@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intellexa - Company Intelligence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .search-box {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 15px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .completeness {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #4caf50;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-card h3 {
+            color: #667eea;
+            font-size: 14px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .info-card p, .info-card ul {
+            color: #333;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .info-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-card ul li {
+            padding: 5px 0;
+        }
+
+        .info-card ul li:before {
+            content: "• ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .error {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            color: #856404;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .link {
+            color: #667eea;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .debug-section {
+            margin-top: 30px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .debug-toggle {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .debug-toggle:hover {
+            background: #5a6268;
+        }
+
+        .debug-content {
+            display: none;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .debug-content.show {
+            display: block;
+        }
+
+        .debug-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .debug-tab {
+            padding: 8px 16px;
+            background: #e9ecef;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .debug-tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .debug-panel {
+            display: none;
+            background: white;
+            border-radius: 6px;
+            padding: 15px;
+        }
+
+        .debug-panel.active {
+            display: block;
+        }
+
+        .json-view {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .json-key {
+            color: #61afef;
+        }
+
+        .json-string {
+            color: #98c379;
+        }
+
+        .json-number {
+            color: #d19a66;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .comparison-table .field-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .comparison-table .mismatch {
+            background: #fff3cd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Intellexa</h1>
+            <p>AI-Powered Company Intelligence Platform</p>
+        </div>
+
+        <div class="search-box">
+            <div class="input-group">
+                <input type="text" id="companyName" placeholder="Enter company name (e.g., Microsoft, Tesla, Siemens)">
+                <button id="searchBtn" onclick="searchCompany()">Search</button>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="forceRescrape">
+                <label for="forceRescrape">Force fresh data (skip cache)</label>
+            </div>
+            <div class="error" id="error"></div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Gathering company intelligence... This may take 1-2 minutes</p>
+        </div>
+
+        <div class="result" id="result">
+            <!-- Results will be populated here -->
+        </div>
+
+        <div class="debug-section" id="debugSection" style="display: none;">
+            <button class="debug-toggle" onclick="toggleDebug()">🔍 View Raw Data & Comparison</button>
+            <div class="debug-content" id="debugContent">
+                <div class="debug-tabs">
+                    <button class="debug-tab active" onclick="showDebugTab('comparison')">Comparison</button>
+                    <button class="debug-tab" onclick="showDebugTab('perplexity')">Perplexity Raw</button>
+                    <button class="debug-tab" onclick="showDebugTab('mistral')">Mistral Output</button>
+                    <button class="debug-tab" onclick="showDebugTab('database')">Database</button>
+                </div>
+                
+                <div id="comparisonPanel" class="debug-panel active">
+                    <h3 style="margin-bottom: 15px;">Data Flow Comparison</h3>
+                    <div id="comparisonTable"></div>
+                </div>
+                
+                <div id="perplexityPanel" class="debug-panel">
+                    <h3 style="margin-bottom: 15px;">Perplexity Raw Response</h3>
+                    <div class="json-view" id="perplexityData"></div>
+                </div>
+                
+                <div id="mistralPanel" class="debug-panel">
+                    <h3 style="margin-bottom: 15px;">Mistral Normalized Output</h3>
+                    <div class="json-view" id="mistralData"></div>
+                </div>
+                
+                <div id="databasePanel" class="debug-panel">
+                    <h3 style="margin-bottom: 15px;">Final Database Data</h3>
+                    <div class="json-view" id="databaseData"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api/v1';
+
+        async function searchCompany() {
+            const companyName = document.getElementById('companyName').value.trim();
+            const forceRescrape = document.getElementById('forceRescrape').checked;
+            
+            if (!companyName) {
+                showError('Please enter a company name');
+                return;
+            }
+
+            hideError();
+            hideResult();
+            showLoading();
+
+            try {
+                const response = await fetch(
+                    `${API_BASE}/scraping/gather?skip_ai_search=true`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            company_name: companyName,
+                            force_rescrape: forceRescrape
+                        })
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                hideLoading();
+                
+                if (data.status === 'success' || data.status === 'cached') {
+                    currentCompanyName = data.gathered_data.company_name;
+                    displayResult(data);
+                    document.getElementById('debugSection').style.display = 'block';
+                    debugData = null; // Reset debug data
+                    
+                    // Show cache notification if data is from cache
+                    if (data.status === 'cached' && data.message) {
+                        const resultDiv = document.getElementById('result');
+                        const cacheNote = document.createElement('div');
+                        cacheNote.style.cssText = 'background: #e3f2fd; color: #1976d2; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-weight: 500;';
+                        cacheNote.innerHTML = '📦 ' + data.message;
+                        resultDiv.insertBefore(cacheNote, resultDiv.firstChild);
+                    }
+                } else {
+                    showError(data.errors?.join(', ') || data.message || 'Failed to gather company data');
+                }
+            } catch (error) {
+                hideLoading();
+                showError('Error: ' + error.message);
+                console.error('Error:', error);
+            }
+        }
+
+        function displayResult(data) {
+            const resultDiv = document.getElementById('result');
+            const company = data.gathered_data;
+            
+            const completeness = (data.data_completeness * 100).toFixed(0);
+            
+            let html = `
+                <h2>${company.company_name || 'Unknown Company'}</h2>
+                <span class="completeness">Data Completeness: ${completeness}%</span>
+                
+                <div class="info-grid">
+            `;
+
+            // Description
+            if (company.description) {
+                html += `
+                    <div class="info-card">
+                        <h3>Description</h3>
+                        <p>${company.description}</p>
+                    </div>
+                `;
+            }
+
+            // Industries
+            if (company.industries && company.industries.length > 0) {
+                html += `
+                    <div class="info-card">
+                        <h3>Industries</h3>
+                        <ul>
+                            ${company.industries.map(ind => `<li>${ind}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Company Size
+            if (company.company_size) {
+                html += `
+                    <div class="info-card">
+                        <h3>Company Size</h3>
+                        <p><strong>Employees:</strong> ${company.company_size.employee_count?.toLocaleString() || 'N/A'}</p>
+                        ${company.company_size.employee_growth ? `<p><strong>Growth:</strong> ${company.company_size.employee_growth}</p>` : ''}
+                    </div>
+                `;
+            }
+
+            // Revenue
+            if (company.revenue) {
+                html += `
+                    <div class="info-card">
+                        <h3>Revenue</h3>
+                        <p><strong>Value:</strong> ${company.revenue.currency || ''} ${company.revenue.value?.toLocaleString() || 'N/A'}${company.revenue.year ? ` (${company.revenue.year})` : ''}</p>
+                    </div>
+                `;
+            }
+
+            // Headquarters
+            if (company.geography?.hq) {
+                const hq = company.geography.hq;
+                const location = [hq.city, hq.state, hq.country].filter(Boolean).join(', ');
+                html += `
+                    <div class="info-card">
+                        <h3>Headquarters</h3>
+                        <p>${location}</p>
+                    </div>
+                `;
+            }
+
+            // Founding Year
+            if (company.founding_year) {
+                html += `
+                    <div class="info-card">
+                        <h3>Founded</h3>
+                        <p>${company.founding_year}</p>
+                    </div>
+                `;
+            }
+
+            // Online Presence
+            if (company.online_presence) {
+                html += `
+                    <div class="info-card">
+                        <h3>Online Presence</h3>
+                        ${company.online_presence.website ? `<p><strong>Website:</strong> <a href="${company.online_presence.website}" target="_blank" class="link">${company.online_presence.website}</a></p>` : ''}
+                        ${company.online_presence.linkedin_url ? `<p><strong>LinkedIn:</strong> <a href="${company.online_presence.linkedin_url}" target="_blank" class="link">${company.online_presence.linkedin_url}</a></p>` : ''}
+                    </div>
+                `;
+            }
+
+            // Products
+            if (company.offerings?.products && company.offerings.products.length > 0) {
+                html += `
+                    <div class="info-card">
+                        <h3>Products</h3>
+                        <ul>
+                            ${company.offerings.products.slice(0, 5).map(prod => `<li>${prod}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            // Services
+            if (company.offerings?.services && company.offerings.services.length > 0) {
+                html += `
+                    <div class="info-card">
+                        <h3>Services</h3>
+                        <ul>
+                            ${company.offerings.services.slice(0, 5).map(serv => `<li>${serv}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+            
+            resultDiv.innerHTML = html;
+            showResult();
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('searchBtn').disabled = true;
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('show');
+            document.getElementById('searchBtn').disabled = false;
+        }
+
+        function showResult() {
+            document.getElementById('result').classList.add('show');
+        }
+
+        function hideResult() {
+            document.getElementById('result').classList.remove('show');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+
+        function hideError() {
+            document.getElementById('error').classList.remove('show');
+        }
+
+        // Allow Enter key to trigger search
+        document.getElementById('companyName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchCompany();
+            }
+        });
+
+        let currentCompanyName = '';
+        let debugData = null;
+
+        function toggleDebug() {
+            const content = document.getElementById('debugContent');
+            content.classList.toggle('show');
+            
+            if (content.classList.contains('show') && !debugData) {
+                loadDebugData();
+            }
+        }
+
+        function showDebugTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.debug-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update panels
+            document.querySelectorAll('.debug-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.getElementById(tabName + 'Panel').classList.add('active');
+        }
+
+        async function loadDebugData() {
+            if (!currentCompanyName) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/scraping/debug/${encodeURIComponent(currentCompanyName)}`);
+                if (!response.ok) {
+                    throw new Error('Debug data not available');
+                }
+                
+                debugData = await response.json();
+                displayDebugData();
+            } catch (error) {
+                document.getElementById('comparisonTable').innerHTML = 
+                    '<p style="color: #666;">Debug data not available. Try searching for a company first.</p>';
+            }
+        }
+
+        function displayDebugData() {
+            if (!debugData) return;
+            
+            const db = debugData.database_data;
+            
+            // Display comparison table
+            displayComparison(db);
+            
+            // Display raw JSON views
+            document.getElementById('perplexityData').innerHTML = 
+                formatJSON(extractPerplexityRaw(db));
+            
+            document.getElementById('mistralData').innerHTML = 
+                formatJSON(extractNormalizedData(db));
+            
+            document.getElementById('databaseData').innerHTML = 
+                formatJSON(db);
+        }
+
+        function extractPerplexityRaw(db) {
+            const raw = {};
+            if (db.field_statuses) {
+                for (const [field, status] of Object.entries(db.field_statuses)) {
+                    if (status.value !== null && status.source?.source_type === 'ai_search') {
+                        raw[field] = status.value;
+                    }
+                }
+            }
+            return raw;
+        }
+
+        function extractNormalizedData(db) {
+            return {
+                company_name: db.company_name,
+                description: db.description,
+                industries: db.industries,
+                geography: db.geography,
+                company_size: db.company_size,
+                revenue: db.revenue,
+                online_presence: db.online_presence,
+                founding_year: db.founding_year,
+                offerings: db.offerings
+            };
+        }
+
+        function displayComparison(db) {
+            const fields = [
+                { name: 'Company Name', raw: 'company_name', normalized: db.company_name },
+                { name: 'Employee Count', raw: 'company_size.employee_count', normalized: db.company_size?.employee_count },
+                { name: 'Industries', raw: 'industries', normalized: db.industries?.join(', ') || 'N/A' },
+                { name: 'Revenue Value', raw: 'revenue.value', normalized: db.revenue?.value },
+                { name: 'Revenue Currency', raw: 'revenue.currency', normalized: db.revenue?.currency },
+                { name: 'HQ City', raw: 'geography.hq.city', normalized: db.geography?.hq?.city },
+                { name: 'HQ Country', raw: 'geography.hq.country', normalized: db.geography?.hq?.country },
+                { name: 'Website', raw: 'online_presence.website', normalized: db.online_presence?.website },
+                { name: 'Founded', raw: 'founding_year', normalized: db.founding_year }
+            ];
+
+            let html = '<table class="comparison-table"><thead><tr><th>Field</th><th>Perplexity Raw</th><th>After Mistral Normalization</th><th>Match</th></tr></thead><tbody>';
+            
+            fields.forEach(field => {
+                const rawValue = db.field_statuses?.[field.raw]?.value || 'N/A';
+                const normalizedValue = field.normalized || 'N/A';
+                
+                // Check if values match (basic comparison)
+                let match = '✓';
+                let rowClass = '';
+                
+                if (typeof rawValue === 'string' && typeof normalizedValue === 'number') {
+                    // Check if raw contains the normalized number
+                    match = rawValue.includes(normalizedValue.toString()) ? '✓' : '⚠️';
+                    rowClass = match === '⚠️' ? 'mismatch' : '';
+                } else if (rawValue !== normalizedValue && rawValue !== 'N/A' && normalizedValue !== 'N/A') {
+                    match = '⚠️';
+                    rowClass = 'mismatch';
+                }
+                
+                html += `
+                    <tr class="${rowClass}">
+                        <td class="field-name">${field.name}</td>
+                        <td><code>${truncate(String(rawValue), 60)}</code></td>
+                        <td><code>${truncate(String(normalizedValue), 60)}</code></td>
+                        <td style="text-align: center; font-size: 18px;">${match}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            document.getElementById('comparisonTable').innerHTML = html;
+        }
+
+        function truncate(str, length) {
+            return str.length > length ? str.substring(0, length) + '...' : str;
+        }
+
+        function formatJSON(obj) {
+            return syntaxHighlight(JSON.stringify(obj, null, 2));
+        }
+
+        function syntaxHighlight(json) {
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+    </script>
+</body>
+</html>

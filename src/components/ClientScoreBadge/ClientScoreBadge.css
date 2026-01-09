@@ -1,0 +1,54 @@
+/* ===== Client Score Hero Badge ===== */
+
+.score-badge-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Circular badge */
+.score-circle {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Score value */
+.score-value-hero {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Label */
+.score-label-hero {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+}
+
+/* Color variants */
+.score-badge-hero.red .score-circle {
+  border: 2px solid #ef4444;
+  color: #ef4444;
+}
+
+.score-badge-hero.amber .score-circle,
+.score-badge-hero.yellow .score-circle {
+  border: 2px solid #f59e0b;
+  color: #f59e0b;
+}
+
+.score-badge-hero.green .score-circle {
+  border: 2px solid #10b981;
+  color: #10b981;
+}
+
+.score-badge-hero.neutral .score-circle {
+  border: 2px solid #666;
+}

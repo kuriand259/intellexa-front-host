@@ -1,0 +1,345 @@
+.search-page {
+    color: #e0e0e0;
+    padding: 1.5rem;
+    font-family: 'Inter', sans-serif;
+    /* background:
+        radial-gradient(circle at top left, rgba(203, 178, 106, 0.15), transparent 40%),
+        radial-gradient(circle at top right, rgba(203, 178, 106, 0.10), transparent 45%),
+        #0b0b0b; */
+    min-height: 100vh;
+}
+
+/* Header Stats Grid */
+.sp-stats-grid {
+    display: grid;
+    /* grid-template-columns: 1.2fr 1fr 1fr 1.2fr; */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.sp-stat-card {
+    /* background: linear-gradient(145deg, #1a1a1a 0%, #0b0b0b 100%); */
+    background: rgba(30, 30, 30, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid #262626;
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.sp-stat-card.primary {
+    background: #FFD700;
+    /* Gold */
+    color: #000;
+    border: none;
+}
+
+.sp-stat-card.primary .sp-label {
+    color: #111;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+
+.sp-stat-card.primary .sp-value {
+    color: #000;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.sp-stat-card:not(.primary) .sp-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #ccc;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.sp-stat-card:not(.primary) .sp-value {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.2rem;
+}
+
+.sp-subtext {
+    font-size: 0.8rem;
+    color: #4caf50;
+    /* Green for positive trend */
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sp-tags {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.sp-tag {
+    background: #333;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    color: #cbb26a;
+    border: 1px solid #444;
+}
+
+.recent-alerts-list {
+    font-size: 0.85rem;
+    color: #ccc;
+    margin-top: 0.5rem;
+    line-height: 1.4;
+}
+
+.recent-alerts-list .bullet {
+    color: #cbb26a;
+    margin-right: 6px;
+}
+
+/* Search Bar Area */
+.sp-search-area {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    align-items: center;
+}
+
+.sp-search-input-wrapper {
+    flex: 2;
+    background: linear-gradient(145deg, #1f1f1f, #141414);
+    border: 1px solid #333;
+    border-radius: 50px;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.sp-search-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    width: 100%;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.sp-filter-btn {
+    flex: 0 0 auto;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 50px;
+    height: 100%;
+    min-height: 48px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #ccc;
+    font-size: 0.95rem;
+    padding: 0 1.5rem;
+}
+
+.sp-filter-btn:hover {
+    background: #252525;
+}
+
+/* Table Section */
+.sp-table-container {
+    background: rgba(15, 15, 15, 0.6);
+    border-radius: 12px;
+    overflow: hidden;
+    /* Enable horizontal scrolling on small screens */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.sp-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    /* Ensure table doesn't crush content */
+    min-width: 800px;
+}
+
+.sp-table th {
+    text-align: left;
+    padding: 1.2rem;
+    color: #ccc;
+    font-weight: 500;
+    border-bottom: 1px solid #2a2a2a;
+    background: rgba(30, 30, 30, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.sp-table td {
+    padding: 1.2rem;
+    color: #eee;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+.sp-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+
+/* Client Score Progress Bar */
+.client-score-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.progress-bar-container {
+    flex: 1;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    min-width: 80px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.progress-score-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    min-width: 30px;
+    text-align: right;
+}
+
+
+/* --- Responsive Breakpoints --- */
+
+/* Tablet (max-width: 1024px) */
+@media (max-width: 1024px) {
+    .sp-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .sp-search-area {
+        gap: 0.5rem;
+    }
+}
+
+/* Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+    .search-page {
+        padding: 1rem;
+    }
+
+    .sp-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sp-search-area {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .sp-search-input-wrapper {
+        border-radius: 12px;
+    }
+
+    .sp-filter-btn {
+        width: 100%;
+        border-radius: 12px;
+    }
+
+    /* Table horizontal scroll is handled by sp-table-container overflow-x: auto */
+    /* Adjust padding for cells to save space if needed */
+    .sp-table th,
+    .sp-table td {
+        padding: 0.8rem;
+    }
+
+    .score-dot {
+        width: 10px;
+        height: 10px;
+    }
+
+    .sp-stat-card .sp-value {
+        font-size: 1.8rem;
+    }
+}
+
+/* Add Company Button */
+.sp-add-btn {
+    background: var(--accent-yellow);
+    /* Gold */
+    color: #000;
+    border: none;
+    border-radius: 50px;
+    padding: 0 1.5rem;
+    height: 48px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sp-add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 215, 0, 0.4);
+}
+
+.sp-add-btn:active {
+    transform: translateY(0);
+}
+
+/* Revenue Filter Dropdown */
+.sp-revenue-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    width: 320px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 1.5rem;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+.sp-revenue-header {
+    font-size: 0.95rem;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.sp-revenue-slider-container {
+    margin-bottom: 1.5rem;
+    padding: 0 0.5rem;
+}
+
+.sp-revenue-values {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #FFD700;
+    font-weight: 600;
+}

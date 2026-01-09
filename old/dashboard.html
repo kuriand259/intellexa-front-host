@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Intellexa – Company Intelligence Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ================= FONTS ================= -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- ================= THREE.JS ================= -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/postprocessing/ShaderPass.js"></script>
+
+<style>
+/* ================= RESET ================= */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  -webkit-font-smoothing: subpixel-antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: Inter, system-ui;
+  background: #070504;
+  color: #e6d8c8;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* ================= SEARCH BAR ================= */
+.search-bar {
+  position: fixed;
+  top: 0;
+  left: 72px;
+  right: 0;
+  height: 72px;
+  background: rgba(8,6,5,0.95);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,200,120,0.12);
+  display: flex;
+  align-items: center;
+  padding: 0 36px;
+  z-index: 100;
+  pointer-events: auto;
+}
+
+.search-input {
+  flex: 1;
+  max-width: 600px;
+  height: 44px;
+  background: rgba(60,45,32,0.4);
+  border: 1px solid rgba(255,200,120,0.2);
+  border-radius: 12px;
+  padding: 0 16px;
+  color: #e6d8c8;
+  font-size: 15px;
+  font-family: Inter;
+}
+
+.search-input::placeholder { color: #8a7a66; }
+.search-input:focus { 
+  outline: none; 
+  border-color: rgba(255,200,120,0.4);
+}
+
+.search-results {
+  position: absolute;
+  top: 72px;
+  left: 0;
+  right: 0;
+  max-height: 400px;
+  background: rgba(20,15,12,0.98);
+  border: 1px solid rgba(255,200,120,0.12);
+  border-top: none;
+  overflow-y: auto;
+  display: none;
+}
+
+.search-results.active { display: block; }
+
+.result-item {
+  padding: 16px 36px;
+  border-bottom: 1px solid rgba(255,200,120,0.08);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.result-item:hover {
+  background: rgba(60,45,32,0.3);
+}
+
+.result-name {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.result-meta {
+  font-size: 13px;
+  color: #8a7a66;
+}
+
+/* ================= DASHBOARD ================= */
+#ui {
+  position: relative;
+  padding-left: 72px;
+  padding-top: 100px;
+  padding-bottom: 50px;
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: fixed;
+  left: 0; top: 0;
+  width: 72px;
+  height: 100%;
+  background: rgba(8,6,5,0.9);
+  backdrop-filter: blur(14px);
+  border-right: 1px solid rgba(255,200,120,0.12);
+  z-index: 101;
+  pointer-events: auto;
+}
+
+.sidebar .item {
+  width: 48px; height: 48px;
+  margin: 18px auto;
+  border-radius: 14px;
+  background: rgba(255,200,120,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sidebar .item:hover {
+  background: rgba(255,200,120,0.2);
+  transform: scale(1.05);
+}
+
+.sidebar .item.active {
+  background: rgba(255,200,120,0.3);
+}
+
+/* ================= STATS CARDS ================= */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 18px;
+  padding: 0 36px;
+  margin-bottom: 28px;
+}
+
+.card {
+  padding: 22px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(60,45,32,0.8), rgba(20,15,12,0.95));
+  border: 1px solid rgba(255,200,120,0.18);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,200,120,0.3);
+}
+
+.card h4 {
+  font-size: 13px;
+  color: #bfa889;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card .value {
+  font-size: 42px;
+  font-weight: 300;
+  margin: 8px 0;
+}
+
+.card .delta {
+  font-size: 13px;
+  color: #86a97d;
+  margin-top: 6px;
+}
+
+.card .delta.negative { color: #d97d7d; }
+
+/* ================= COMPANY PROFILE VIEW ================= */
+.company-view {
+  display: none;
+  padding: 0 36px;
+}
+
+.company-view.active { display: block; }
+
+.company-header {
+  margin-bottom: 28px;
+  padding: 28px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(60,45,32,0.9), rgba(30,22,16,0.95));
+  border: 1px solid rgba(255,200,120,0.2);
+}
+
+.company-name {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.company-meta {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.meta-label {
+  font-size: 12px;
+  color: #8a7a66;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.meta-value {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* ================= CLIENT SCORE CARD ================= */
+.score-card {
+  padding: 28px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(60,45,32,0.8), rgba(20,15,12,0.95));
+  border: 2px solid rgba(255,200,120,0.2);
+  margin-bottom: 28px;
+}
+
+.score-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.score-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.score-badge {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.score-badge.GREEN {
+  background: rgba(134, 169, 125, 0.2);
+  color: #86a97d;
+  border: 1px solid rgba(134, 169, 125, 0.4);
+}
+
+.score-badge.YELLOW {
+  background: rgba(229, 192, 123, 0.2);
+  color: #e5c07b;
+  border: 1px solid rgba(229, 192, 123, 0.4);
+}
+
+.score-badge.RED {
+  background: rgba(217, 125, 125, 0.2);
+  color: #d97d7d;
+  border: 1px solid rgba(217, 125, 125, 0.4);
+}
+
+.score-value {
+  font-size: 64px;
+  font-weight: 300;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.score-recommendation {
+  font-size: 15px;
+  color: #bfa889;
+  margin-bottom: 20px;
+  padding: 12px;
+  background: rgba(60,45,32,0.3);
+  border-radius: 8px;
+}
+
+.score-factors {
+  margin-top: 16px;
+}
+
+.factor-item {
+  padding: 10px;
+  margin: 6px 0;
+  background: rgba(60,45,32,0.2);
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+/* ================= ANALYSIS COMPARISON ================= */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.analysis-panel {
+  padding: 24px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(60,45,32,0.7), rgba(20,15,12,0.95));
+  border: 1px solid rgba(255,200,120,0.15);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,200,120,0.1);
+}
+
+.panel-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.panel-badge {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(255,200,120,0.15);
+}
+
+.analysis-section {
+  margin: 16px 0;
+}
+
+.section-title {
+  font-size: 14px;
+  color: #bfa889;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.analysis-item {
+  padding: 8px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #d4c4b0;
+}
+
+.analysis-item::before {
+  content: "•";
+  margin-right: 8px;
+  color: #8a7a66;
+}
+
+/* ================= ADDITIONAL DATA SECTIONS ================= */
+.section {
+  margin: 28px 36px;
+  padding: 22px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(60,45,32,0.7), rgba(20,15,12,0.95));
+  border: 1px solid rgba(255,200,120,0.15);
+}
+
+.section-header {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,200,120,0.1);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,200,120,0.08);
+}
+
+.row:last-child { border-bottom: none; }
+
+.row-label {
+  font-size: 14px;
+  color: #bfa889;
+}
+
+.row-value {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ================= LOADING STATE ================= */
+.loading {
+  text-align: center;
+  padding: 60px;
+  font-size: 16px;
+  color: #8a7a66;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  margin: 20px auto;
+  border: 3px solid rgba(255,200,120,0.1);
+  border-top-color: rgba(255,200,120,0.6);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ================= TABS ================= */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 10px 20px;
+  background: rgba(60,45,32,0.3);
+  border: 1px solid rgba(255,200,120,0.15);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  background: rgba(60,45,32,0.5);
+}
+
+.tab.active {
+  background: rgba(255,200,120,0.2);
+  border-color: rgba(255,200,120,0.3);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .company-meta {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HTML UI ================= -->
+<div class="sidebar">
+  <div class="item" onclick="showView('dashboard')">📊</div>
+  <div class="item" onclick="showView('search')">🔍</div>
+  <div class="item" onclick="showView('settings')">⚙️</div>
+</div>
+
+<!-- ================= SEARCH BAR ================= -->
+<div class="search-bar">
+  <input 
+    type="text" 
+    class="search-input" 
+    id="companySearch"
+    placeholder="Search companies by name, industry, or location..."
+    onkeyup="searchCompanies(event)"
+  />
+  <div class="search-results" id="searchResults"></div>
+</div>
+
+<div id="ui">
+  <!-- ================= DASHBOARD VIEW ================= -->
+  <div id="dashboardView" class="view active">
+    <div class="cards">
+      <div class="card" onclick="filterByLabel('all')">
+        <h4>Total Companies</h4>
+        <div class="value" id="totalCompanies">-</div>
+        <div class="delta" id="totalDelta">Loading...</div>
+      </div>
+      <div class="card" onclick="filterByLabel('GREEN')">
+        <h4>High-Value Prospects</h4>
+        <div class="value" id="greenCount">-</div>
+        <div class="delta">GREEN Score (75-100)</div>
+      </div>
+      <div class="card" onclick="filterByLabel('YELLOW')">
+        <h4>Medium Prospects</h4>
+        <div class="value" id="yellowCount">-</div>
+        <div class="delta">YELLOW Score (50-74)</div>
+      </div>
+      <div class="card" onclick="filterByLabel('RED')">
+        <h4>Low Priority</h4>
+        <div class="value" id="redCount">-</div>
+        <div class="delta">RED Score (0-49)</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">Top Countries</div>
+      <div id="countriesStats">
+        <div class="loading">Loading statistics...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= COMPANY VIEW ================= -->
+  <div id="companyView" class="company-view">
+    <button onclick="showView('dashboard')" style="margin-bottom: 20px; padding: 10px 20px; background: rgba(255,200,120,0.2); border: 1px solid rgba(255,200,120,0.3); border-radius: 8px; color: #e6d8c8; cursor: pointer;">← Back to Dashboard</button>
+    
+    <!-- Company Header -->
+    <div class="company-header">
+      <div class="company-name" id="companyName">-</div>
+      <div class="company-meta">
+        <div class="meta-item">
+          <div class="meta-label">Industry</div>
+          <div class="meta-value" id="companyIndustry">-</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Employees</div>
+          <div class="meta-value" id="companySize">-</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Revenue</div>
+          <div class="meta-value" id="companyRevenue">-</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Location</div>
+          <div class="meta-value" id="companyLocation">-</div>
+        </div>
+      </div>
+      <div style="margin-top: 16px; color: #bfa889; font-size: 14px; line-height: 1.6;" id="companyDescription">-</div>
+    </div>
+
+    <!-- Client Score Card -->
+    <div class="score-card" id="scoreCard">
+      <div class="loading">
+        <div class="spinner"></div>
+        Analyzing company with AI...
+      </div>
+    </div>
+
+    <!-- Analysis Comparison: Perplexity vs Mistral -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('analysis')">🤖 AI Analysis</div>
+      <div class="tab" onclick="switchTab('competitors')">🎯 Competitors</div>
+      <div class="tab" onclick="switchTab('risks')">⚠️ Risk Flags</div>
+      <div class="tab" onclick="switchTab('raw')">📄 Raw Data</div>
+    </div>
+
+    <div class="tab-content active" id="analysisTab">
+      <div class="analysis-grid">
+        <!-- Mistral AI Analysis -->
+        <div class="analysis-panel">
+          <div class="panel-header">
+            <div class="panel-title">🧠 Mistral AI Analysis</div>
+            <div class="panel-badge">Ollama/Mistral</div>
+          </div>
+          <div id="mistralAnalysis">
+            <div class="loading">Generating AI analysis...</div>
+          </div>
+        </div>
+
+        <!-- Perplexity Raw Data -->
+        <div class="analysis-panel">
+          <div class="panel-header">
+            <div class="panel-title">📊 Data Sources</div>
+            <div class="panel-badge">Perplexity + Scraping</div>
+          </div>
+          <div id="perplexityData">
+            <div class="loading">Loading raw data...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="competitorsTab">
+      <div class="section">
+        <div class="section-header">Competitor Landscape</div>
+        <div id="competitorsList">
+          <div class="loading">Loading competitors...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="risksTab">
+      <div class="section">
+        <div class="section-header">Risk Assessment</div>
+        <div id="risksList">
+          <div class="loading">Loading risk analysis...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="rawTab">
+      <div class="section">
+        <div class="section-header">Raw Company Data</div>
+        <pre id="rawData" style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 12px; line-height: 1.5;"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= THREE.JS ================= -->
+<script>
+/* ================= API CONFIGURATION ================= */
+const API_BASE = 'http://localhost:8000/api/v1';
+let currentCompany = null;
+let currentAnalysis = null;
+let searchTimeout = null;
+
+/* ================= INITIALIZATION ================= */
+window.addEventListener('DOMContentLoaded', () => {
+  loadDashboardStats();
+  setupEventListeners();
+});
+
+/* ================= DASHBOARD STATS ================= */
+async function loadDashboardStats() {
+  try {
+    // Get total companies count
+    const countRes = await fetch(`${API_BASE}/companies/stats/count`);
+    const countData = await countRes.json();
+    document.getElementById('totalCompanies').textContent = countData.count.toLocaleString();
+    
+    // Get recent companies
+    const recentRes = await fetch(`${API_BASE}/companies/recent?days=1&limit=100`);
+    const recentData = await recentRes.json();
+    document.getElementById('totalDelta').textContent = `▲ ${recentData.length} added today`;
+    
+    // Get analysis counts by label
+    const greenRes = await fetch(`${API_BASE}/analysis/filter/by-label/GREEN?limit=1000`);
+    const greenData = await greenRes.json();
+    document.getElementById('greenCount').textContent = greenData.length.toLocaleString();
+    
+    const yellowRes = await fetch(`${API_BASE}/analysis/filter/by-label/YELLOW?limit=1000`);
+    const yellowData = await yellowRes.json();
+    document.getElementById('yellowCount').textContent = yellowData.length.toLocaleString();
+    
+    const redRes = await fetch(`${API_BASE}/analysis/filter/by-label/RED?limit=1000`);
+    const redData = await redRes.json();
+    document.getElementById('redCount').textContent = redData.length.toLocaleString();
+    
+    // Load country statistics
+    await loadCountryStats();
+  } catch (error) {
+    console.error('Error loading dashboard stats:', error);
+  }
+}
+
+async function loadCountryStats() {
+  try {
+    const res = await fetch(`${API_BASE}/companies?limit=1000`);
+    const companies = await res.json();
+    
+    // Count by country
+    const countryCounts = {};
+    companies.forEach(c => {
+      const country = c.geography?.hq?.country || 'Unknown';
+      countryCounts[country] = (countryCounts[country] || 0) + 1;
+    });
+    
+    // Sort and display top countries
+    const sorted = Object.entries(countryCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10);
+    
+    const html = sorted.map(([country, count]) => 
+      `<div class="row">
+        <span class="row-label">${getCountryFlag(country)} ${country}</span>
+        <span class="row-value">${count.toLocaleString()}</span>
+      </div>`
+    ).join('');
+    
+    document.getElementById('countriesStats').innerHTML = html;
+  } catch (error) {
+    document.getElementById('countriesStats').innerHTML = '<div class="row">Error loading statistics</div>';
+  }
+}
+
+function getCountryFlag(country) {
+  const flags = {
+    'United States': '🇺🇸',
+    'India': '🇮🇳',
+    'United Kingdom': '🇬🇧',
+    'Canada': '🇨🇦',
+    'Singapore': '🇸🇬',
+    'Germany': '🇩🇪',
+    'France': '🇫🇷',
+    'Australia': '🇦🇺',
+    'Japan': '🇯🇵',
+    'China': '🇨🇳'
+  };
+  return flags[country] || '🌍';
+}
+
+/* ================= SEARCH FUNCTIONALITY ================= */
+async function searchCompanies(event) {
+  const query = event.target.value.trim();
+  const resultsDiv = document.getElementById('searchResults');
+  
+  if (query.length < 2) {
+    resultsDiv.classList.remove('active');
+    return;
+  }
+  
+  // Debounce search
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/companies/search/?q=${encodeURIComponent(query)}&limit=10`);
+      const companies = await res.json();
+      
+      if (companies.length === 0) {
+        resultsDiv.innerHTML = '<div class="result-item">No companies found</div>';
+      } else {
+        resultsDiv.innerHTML = companies.map(c => `
+          <div class="result-item" onclick="loadCompany('${c._id}')">
+            <div class="result-name">${c.company_name}</div>
+            <div class="result-meta">
+              ${c.industries?.join(', ') || 'N/A'} • 
+              ${c.geography?.hq?.country || 'Unknown'} • 
+              ${c.company_size?.employee_count ? c.company_size.employee_count.toLocaleString() + ' employees' : 'Size unknown'}
+            </div>
+          </div>
+        `).join('');
+      }
+      
+      resultsDiv.classList.add('active');
+    } catch (error) {
+      console.error('Search error:', error);
+      resultsDiv.innerHTML = '<div class="result-item">Error searching companies</div>';
+    }
+  }, 300);
+}
+
+/* ================= COMPANY VIEW ================= */
+async function loadCompany(companyId) {
+  try {
+    // Hide search results
+    document.getElementById('searchResults').classList.remove('active');
+    document.getElementById('companySearch').value = '';
+    
+    // Show loading
+    showView('company');
+    document.getElementById('scoreCard').innerHTML = '<div class="loading"><div class="spinner"></div>Analyzing company with AI...</div>';
+    document.getElementById('mistralAnalysis').innerHTML = '<div class="loading">Generating AI analysis...</div>';
+    
+    // Load company data
+    const companyRes = await fetch(`${API_BASE}/companies/${companyId}`);
+    currentCompany = await companyRes.json();
+    
+    // Display company info
+    displayCompanyInfo(currentCompany);
+    
+    // Load or generate analysis
+    await loadAnalysis(companyId);
+    
+  } catch (error) {
+    console.error('Error loading company:', error);
+    alert('Error loading company data');
+  }
+}
+
+function displayCompanyInfo(company) {
+  document.getElementById('companyName').textContent = company.company_name;
+  document.getElementById('companyIndustry').textContent = company.industries?.join(', ') || 'N/A';
+  document.getElementById('companySize').textContent = company.company_size?.employee_count 
+    ? company.company_size.employee_count.toLocaleString() + ' employees' 
+    : 'Unknown';
+  document.getElementById('companyRevenue').textContent = company.revenue?.value 
+    ? '$' + (company.revenue.value / 1e9).toFixed(2) + 'B' 
+    : 'Unknown';
+  document.getElementById('companyLocation').textContent = 
+    [company.geography?.hq?.city, company.geography?.hq?.state, company.geography?.hq?.country]
+      .filter(Boolean).join(', ') || 'Unknown';
+  document.getElementById('companyDescription').textContent = company.description || 'No description available';
+  
+  // Display raw data
+  document.getElementById('rawData').textContent = JSON.stringify(company, null, 2);
+  
+  // Display Perplexity/Scraping raw data
+  displayPerplexityData(company);
+}
+
+function displayPerplexityData(company) {
+  const sections = [];
+  
+  // Company Size Data
+  if (company.company_size) {
+    sections.push(`
+      <div class="analysis-section">
+        <div class="section-title">Company Size</div>
+        <div class="analysis-item">Employees: ${company.company_size.employee_count?.toLocaleString() || 'Unknown'}</div>
+        <div class="analysis-item">Trend: ${company.company_size.trend || 'Unknown'}</div>
+      </div>
+    `);
+  }
+  
+  // Revenue Data
+  if (company.revenue) {
+    sections.push(`
+      <div class="analysis-section">
+        <div class="section-title">Financial Data</div>
+        <div class="analysis-item">Revenue: $${(company.revenue.value / 1e9).toFixed(2)}B ${company.revenue.currency}</div>
+        <div class="analysis-item">Type: ${company.revenue.type}</div>
+        <div class="analysis-item">Confidence: ${(company.revenue.confidence * 100).toFixed(0)}%</div>
+      </div>
+    `);
+  }
+  
+  // Products/Services
+  if (company.offerings) {
+    const items = [
+      ...(company.offerings.products || []).map(p => `Product: ${p}`),
+      ...(company.offerings.services || []).map(s => `Service: ${s}`)
+    ];
+    if (items.length > 0) {
+      sections.push(`
+        <div class="analysis-section">
+          <div class="section-title">Offerings</div>
+          ${items.slice(0, 5).map(item => `<div class="analysis-item">${item}</div>`).join('')}
+        </div>
+      `);
+    }
+  }
+  
+  // Tech Stack
+  if (company.tech_stack && company.tech_stack.length > 0) {
+    sections.push(`
+      <div class="analysis-section">
+        <div class="section-title">Technology Stack</div>
+        ${company.tech_stack.slice(0, 5).map(tech => `<div class="analysis-item">${tech}</div>`).join('')}
+      </div>
+    `);
+  }
+  
+  // Online Presence
+  if (company.online_presence) {
+    sections.push(`
+      <div class="analysis-section">
+        <div class="section-title">Online Presence</div>
+        ${company.online_presence.website ? `<div class="analysis-item">Website: <a href="${company.online_presence.website}" target="_blank" style="color: #86a97d">${company.online_presence.website}</a></div>` : ''}
+        ${company.online_presence.linkedin_url ? `<div class="analysis-item">LinkedIn: <a href="${company.online_presence.linkedin_url}" target="_blank" style="color: #86a97d">View Profile</a></div>` : ''}
+      </div>
+    `);
+  }
+  
+  document.getElementById('perplexityData').innerHTML = sections.join('') || '<div class="loading">No raw data available</div>';
+}
+
+async function loadAnalysis(companyId) {
+  try {
+    // Try to get existing analysis
+    let analysisRes = await fetch(`${API_BASE}/analysis/company/${companyId}/latest`);
+    
+    if (analysisRes.status === 404) {
+      // Generate new analysis
+      document.getElementById('scoreCard').innerHTML = '<div class="loading"><div class="spinner"></div>Generating AI analysis (2-3 minutes)...</div>';
+      analysisRes = await fetch(`${API_BASE}/analysis/generate/${companyId}`, { method: 'POST' });
+    }
+    
+    currentAnalysis = await analysisRes.json();
+    
+    // Display client score
+    displayClientScore(currentAnalysis);
+    
+    // Display Mistral AI analysis
+    displayMistralAnalysis(currentAnalysis);
+    
+    // Display competitors
+    displayCompetitors(currentAnalysis.competitors || []);
+    
+    // Display risks
+    displayRisks(currentAnalysis.risk_flags || []);
+    
+  } catch (error) {
+    console.error('Error loading analysis:', error);
+    document.getElementById('scoreCard').innerHTML = '<div class="loading">Error loading analysis. Click to retry.</div>';
+  }
+}
+
+function displayClientScore(analysis) {
+  const score = analysis.client_score;
+  const html = `
+    <div class="score-header">
+      <div class="score-title">Client Potential Score</div>
+      <div class="score-badge ${score.label}">${score.label}</div>
+    </div>
+    <div class="score-value">${score.value}/100</div>
+    <div class="score-recommendation">${score.recommendation}</div>
+    <div class="score-factors">
+      <div class="section-title">Key Factors</div>
+      ${score.factors.map(f => `<div class="factor-item">${f}</div>`).join('')}
+    </div>
+  `;
+  document.getElementById('scoreCard').innerHTML = html;
+}
+
+function displayMistralAnalysis(analysis) {
+  const sections = [];
+  
+  // SWOT if available
+  if (analysis.swot_summary) {
+    const swot = analysis.swot_summary;
+    if (swot.strengths?.length) {
+      sections.push(`
+        <div class="analysis-section">
+          <div class="section-title">✅ Strengths</div>
+          ${swot.strengths.slice(0, 3).map(s => `<div class="analysis-item">${s}</div>`).join('')}
+        </div>
+      `);
+    }
+    if (swot.opportunities?.length) {
+      sections.push(`
+        <div class="analysis-section">
+          <div class="section-title">💡 Opportunities</div>
+          ${swot.opportunities.slice(0, 3).map(o => `<div class="analysis-item">${o}</div>`).join('')}
+        </div>
+      `);
+    }
+  }
+  
+  // Market Insights
+  if (analysis.market_insights) {
+    const mi = analysis.market_insights;
+    sections.push(`
+      <div class="analysis-section">
+        <div class="section-title">📈 Market Position</div>
+        <div class="analysis-item">Position: ${mi.market_position || 'N/A'}</div>
+        <div class="analysis-item">Growth Potential: ${mi.growth_potential || 'N/A'}</div>
+        ${mi.key_trends ? `<div class="analysis-item">Trends: ${mi.key_trends.slice(0, 2).join(', ')}</div>` : ''}
+      </div>
+    `);
+  }
+  
+  // Reasoning
+  if (analysis.reasoning) {
+    sections.push(`
+      <div class="analysis-section">
+        <div class="section-title">🧠 AI Reasoning</div>
+        <div style="padding: 10px; background: rgba(0,0,0,0.2); border-radius: 6px; font-size: 13px; line-height: 1.6; white-space: pre-wrap;">${analysis.reasoning.summary}</div>
+      </div>
+    `);
+  }
+  
+  document.getElementById('mistralAnalysis').innerHTML = sections.join('') || '<div class="loading">No AI analysis available</div>';
+}
+
+function displayCompetitors(competitors) {
+  if (competitors.length === 0) {
+    document.getElementById('competitorsList').innerHTML = '<div class="analysis-item">No competitors identified</div>';
+    return;
+  }
+  
+  const html = competitors.map((c, i) => `
+    <div class="row">
+      <div class="row-label">${i + 1}. ${c.company_name}</div>
+      <div class="row-value">
+        <span style="color: ${c.threat_level === 'High' ? '#d97d7d' : c.threat_level === 'Medium' ? '#e5c07b' : '#86a97d'}">${c.threat_level || 'Medium'}</span>
+        <span style="margin-left: 12px; color: #8a7a66">${(c.similarity_score * 100).toFixed(0)}% overlap</span>
+      </div>
+    </div>
+  `).join('');
+  
+  document.getElementById('competitorsList').innerHTML = html;
+}
+
+function displayRisks(risks) {
+  if (risks.length === 0) {
+    document.getElementById('risksList').innerHTML = '<div class="analysis-item">No significant risks identified</div>';
+    return;
+  }
+  
+  const html = risks.map(r => `
+    <div class="row">
+      <div class="row-label">
+        <span style="color: ${r.severity === 'high' ? '#d97d7d' : r.severity === 'medium' ? '#e5c07b' : '#86a97d'}">⚠️ ${r.severity.toUpperCase()}</span>
+        <div style="font-size: 12px; color: #8a7a66; margin-top: 4px;">${r.flag}</div>
+      </div>
+      <div class="row-value" style="flex: 1; text-align: right; font-size: 13px; color: #bfa889;">${r.explanation}</div>
+    </div>
+  `).join('');
+  
+  document.getElementById('risksList').innerHTML = html;
+}
+
+/* ================= VIEW MANAGEMENT ================= */
+function showView(viewName) {
+  document.getElementById('dashboardView')?.classList.remove('active');
+  document.getElementById('companyView')?.classList.remove('active');
+  
+  if (viewName === 'dashboard') {
+    document.getElementById('dashboardView').classList.add('active');
+    loadDashboardStats();
+  } else if (viewName === 'company') {
+    document.getElementById('companyView').classList.add('active');
+  }
+}
+
+function switchTab(tabName) {
+  // Update tab buttons
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  // Update tab content
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById(tabName + 'Tab').classList.add('active');
+}
+
+function filterByLabel(label) {
+  if (label === 'all') {
+    showView('dashboard');
+  } else {
+    // Could add filtered view here
+    console.log('Filter by:', label);
+  }
+}
+
+function setupEventListeners() {
+  // Click outside search to close
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-bar')) {
+      document.getElementById('searchResults').classList.remove('active');
+    }
+  });
+}
+
+/* ================= SCENE ================= */
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(devicePixelRatio);
+renderer.domElement.style.position = 'fixed';
+renderer.domElement.style.top = '0';
+renderer.domElement.style.left = '0';
+renderer.domElement.style.zIndex = '-1';
+renderer.domElement.style.pointerEvents = 'none';
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+
+/* ================= SCREEN QUAD ================= */
+const quad = new THREE.Mesh(
+  new THREE.PlaneGeometry(2,2),
+  new THREE.MeshBasicMaterial({ color: 0x000000 })
+);
+scene.add(quad);
+
+/* ================= COMPOSER ================= */
+const composer = new THREE.EffectComposer(renderer);
+composer.addPass(new THREE.RenderPass(scene, camera));
+
+/* ================= BLOOM ================= */
+const bloom = new THREE.UnrealBloomPass(
+  new THREE.Vector2(innerWidth, innerHeight),
+  1.2,   // strength
+  0.8,   // radius
+  0.25   // threshold
+);
+composer.addPass(bloom);
+
+/* ================= FILM GRAIN + LUT ================= */
+const FilmShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    time: { value: 0 }
+  },
+  vertexShader: `
+    varying vec2 vUv;
+    void main(){ vUv = uv; gl_Position = vec4(position,1.0); }
+  `,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    uniform float time;
+    varying vec2 vUv;
+
+    float rand(vec2 co){
+      return fract(sin(dot(co.xy,vec2(12.9898,78.233))+time)*43758.5453);
+    }
+
+    void main(){
+      vec4 col = texture2D(tDiffuse, vUv);
+
+      // LUT-like warm grade
+      col.rgb = vec3(
+        col.r * 1.10 + col.g * 0.05,
+        col.g * 0.95,
+        col.b * 0.85
+      );
+
+      // grain
+      float g = rand(vUv) * 0.06;
+      col.rgb += g;
+
+      // vignette
+      float d = distance(vUv, vec2(0.5));
+      col.rgb *= smoothstep(0.85, 0.4, d);
+
+      gl_FragColor = col;
+    }
+  `
+};
+
+const filmPass = new THREE.ShaderPass(FilmShader);
+composer.addPass(filmPass);
+
+/* ================= LOOP ================= */
+function animate(t){
+  filmPass.uniforms.time.value = t * 0.001;
+  composer.render();
+  requestAnimationFrame(animate);
+}
+animate();
+
+/* ================= RESPONSIVE ================= */
+window.addEventListener('resize', () => {
+  renderer.setSize(innerWidth, innerHeight);
+  composer.setSize(innerWidth, innerHeight);
+});
+</script>
+
+</body>
+</html>
